@@ -6,11 +6,16 @@ import { SignIn, SignUp } from '@clerk/clerk-react'
 import Navbar from './components/navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
-import Movies from './pages/movies'
+import Movies from './pages/Movies'
 import MovieDetails from './pages/MovieDetails'
 import SeatLayout from './pages/SeatLayout'
 import MyBooking from './pages/MyBooking'
 import Favourite from './pages/Favourite'
+import Layout from './pages/Admin/Layout'
+import Dashboard from './pages/Admin/Dashboard'
+import AddShows from './pages/Admin/AddShows'
+import ListShows from './pages/Admin/ListShows'
+import  ListBookings from './pages/Admin/ListBookings'
 const appearance = {
   elements: {
     card: "mx-auto my-20 shadow-xl", // centers the form with margin
@@ -60,8 +65,15 @@ const App = () => {
         <Route path="/movies" element={<Movies />} />
         <Route path="/movies/:id" element={<MovieDetails />} />
         <Route path="/movies/:id/:date" element={<SeatLayout />} />
-        <Route path="/my-booking" element={<MyBooking />} />
+        <Route path="/my-bookings" element={<MyBooking />} />
         <Route path="/favourite" element={<Favourite />} />
+        <Route path='/admin/*' element={<Layout/>}>
+        <Route index element={<Dashboard/>}/>
+        <Route path='add-shows' element={<AddShows/>} />
+        <Route path='list-shows' element={<ListShows/>} />
+        <Route path='list-bookings' element={<ListBookings/>} />
+
+        </Route>
       </Routes>
 
       {!isAdminRoute && <Footer />}
