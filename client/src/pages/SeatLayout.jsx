@@ -6,6 +6,7 @@ import { ArrowRight, ClockIcon } from 'lucide-react';
 import isoTimeFormat from '../lib/isoTimeFormat';
 import BlurCircle from '../components/BlurCircle';
 import toast from 'react-hot-toast';
+import { useAppContext } from '../context/AppContext';
 
 const SeatLayout = () => {
   const groupRows = [["A", "B"], ["C", "D"], ["E", "F"], ["G", "H"], ["I", "J"]]
@@ -13,15 +14,21 @@ const SeatLayout = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [show, setShow] = useState(null);
+  const [occupiedSeats,setOccupiedSeats]=useState([]);
   const navigate = useNavigate();
+  const {axios,getToken,user}=useAppContext();
   const getShow = async () => {
-    const show = dummyShowsData.find(show => show._id === id)
-    if (show) {
-      setShow({
-        movie: show,
-        dateTime: dummyDateTimeData
-      })
+    try{
+      const {data}=await axios.get(`/api/show/${id}`)
+      if(data.success){
+        setShow(data)
+      }
+
+    } catch(error){
+      console.log(error)
+
     }
+    
   }
   const handleSeatClick = (seatId) => {
     if (!selectedTime) {
@@ -51,9 +58,27 @@ const SeatLayout = () => {
 
     </div>
   )
+  const getOccupiedSeats = async() =>{
+    try{
+      const{data}=await axios.get(`/api/booking/seats/${selectedTime.showId}`)
+      if(data.success){
+        setOccupiedSeats(data.occupiedSeats)
+      }else{
+        toast.error(data.message)
+      }
+
+    } catch(error){
+      console.log(error)
+    }
+  }
   useEffect(() => {
     getShow()
   }, [])
+  useEffect(() =>{
+    if(selectedTime){
+      getOccupiedSeats();
+    }
+  },[selectedTime])
   return show ? (
     <div className='flex flex-col md:flex-row px-6 md:px-16 lg:px-40 py-30 md:pt-50'>
       {/*Available Timings*/}
