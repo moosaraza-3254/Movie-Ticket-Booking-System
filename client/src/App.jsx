@@ -17,6 +17,7 @@ import AddShows from './pages/Admin/AddShows'
 import ListShows from './pages/Admin/ListShows'
 import  ListBookings from './pages/Admin/ListBookings'
 import { useAppContext } from './context/AppContext.jsx'
+import Loading from './components/Loading.jsx'
 const appearance = {
   elements: {
     card: "mx-auto my-20 shadow-xl", // centers the form with margin
@@ -68,6 +69,7 @@ const App = () => {
         <Route path="/movies/:id" element={<MovieDetails />} />
         <Route path="/movies/:id/:date" element={<SeatLayout />} />
         <Route path="/my-bookings" element={<MyBooking />} />
+        <Route path="/loading/:nextUrl" element={<Loading />} />
         <Route path="/favourite" element={<Favourite />} />
         <Route path='/admin/*' element={ user ? <Layout/> : (
           <div className='min-h-screen flex justify-center items-center'>

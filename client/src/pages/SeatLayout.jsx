@@ -37,6 +37,9 @@ const SeatLayout = () => {
     if (!selectedSeats.includes(seatId) && selectedSeats.length > 4) {
       return toast("You can only select 5 seats")
     }
+    if(occupiedSeats.includes(seatId)){
+      return toast('This seat is already booked')
+    }
     setSelectedSeats(prev => prev.includes(seatId) ? prev.filter(seat => seat !== seatId) : [...prev, seatId])
   }
   const renderSeats = (row, count = 9) => (
@@ -46,9 +49,10 @@ const SeatLayout = () => {
           const seatId = `${row}${i + 1}`;
           return (
             <button key={seatId} onClick={() => handleSeatClick(seatId)}
-              className={`h-8 w-8 rounded boder border-primary/60 cursor-pointer ${selectedSeats.includes(seatId)
-                && "bg-primary text-white "
-                }`}>
+              className={`h-8 w-8 rounded boder border-primary/60 cursor-pointer
+                 ${selectedSeats.includes(seatId)
+                && "bg-primary text-white "}
+                ${occupiedSeats.includes(seatId)&&'opacity-50'} `}>
               {seatId}
             </button>
           );
@@ -69,6 +73,23 @@ const SeatLayout = () => {
 
     } catch(error){
       console.log(error)
+    }
+  }
+  const bookTickets = async() =>{
+    try{
+      if(!user) return toast.error('Please login to proceed')
+        if(!selectedTime || !selectedSeats.length) return toast.error('Please select a time and seats');
+      const {data}=await axios.post('/api/booking/create',{showId:selectedTime.showId,selectedSeats},
+        {headers:{Authorization:`Bearer ${await getToken()}`}})
+        if(data.success){
+          window.location.href=data.url;
+        }else{
+          toast.error(data.message)
+        }
+
+    } catch(error){
+      toast.error(error.message)
+
     }
   }
   useEffect(() => {
@@ -118,7 +139,7 @@ const SeatLayout = () => {
           </div>
 
         </div>
-        <button onClick={()=> navigate('/my-bookings')} className='flex items-center gap-1
+        <button onClick={bookTickets} className='flex items-center gap-1
         mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium
         cursor-pointer active-scale:95'>
           Proceed to checkout 
