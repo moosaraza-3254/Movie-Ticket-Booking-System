@@ -22,19 +22,28 @@ export const stripeWebhook = async (request, response) => {
                 })
                 const session = sessionList.data[0]
                 const { bookingId } = session.metadata
-                await Booking.findByIdAndUpdate(bookingId,{
-                    isPaid:true,
-                    paymentLink:""
+                await Booking.findByIdAndUpdate(bookingId, {
+                    isPaid: true,
+                    paymentLink: ""
+
                 })
+                //SEND CONFIRMATION EMAIL
+                await inngest.send({
+                    name:'app/show.booked',
+                    data:{bookingId}
+
+                })
+
+
                 break;
             }
             default:
-                console.log('Unhandled Event Type:',event.type)
+                console.log('Unhandled Event Type:', event.type)
         }
-        response.json({received:true})
+        response.json({ received: true })
 
     } catch (err) {
-        console.error("Webhook Processing Error:",err);
+        console.error("Webhook Processing Error:", err);
         response.status(500).send("Internal Server Error")
 
     }
