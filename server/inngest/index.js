@@ -34,7 +34,7 @@ const syncUserDeletion = inngest.createFunction(
 )
 //Inngest Function to update user data to a database
 const syncUserUpdation = inngest.createFunction(
-    {id:'upadate-user-with-clerk'},
+    {id:'update-user-with-clerk'},
     { event:'clerk/user.updated'},
     async ({event}) =>{
        const {id,first_name,last_name,email_addresses,image_url} = event.data
@@ -84,7 +84,7 @@ const sendBookingConfirmationEmail = inngest.createFunction(
         await sendEmail({
             to:booking.user.email,
             subject:`Payment Confirmation: "${booking.show.movie.title}" booked!`,
-            body:`div style="font-family: Arial, sans-serif; line-height: 1.5;">
+            body:`<div style="font-family: Arial, sans-serif; line-height: 1.5;">
   <h2>Hi ${booking.user.name}</h2>
   <p>Your booking for <strong style="color: #F84565;">${booking.show.movie.title}</strong> is confirmed.</p>
   <p>
