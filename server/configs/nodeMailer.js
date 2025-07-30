@@ -10,7 +10,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
-
 const sendEmail = async ({to,subject,body})=>{
     const response = await transporter.sendMail({
         from:process.env.SENDER_EMAIL,
