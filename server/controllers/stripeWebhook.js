@@ -5,47 +5,51 @@ export const stripeWebhook = async (request, response) => {
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
     const sig = request.headers['stripe-signature'];
     let event;
+
     try {
-        event = stripeInstance.webhooks.constructEvent(request.body, sig, process.
-            env.STRIPE_WEBHOOK_SECRET)
-    }
-    catch (error) {
+        event = stripeInstance.webhooks.constructEvent(
+            request.body,
+            sig,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+    } catch (error) {
         return response.status(400).send(`Webhook Error: ${error.message}`);
     }
 
     try {
         switch (event.type) {
             case "payment_intent.succeeded": {
-                const paymentIntent = event.data.object
+                const paymentIntent = event.data.object;
+
                 const sessionList = await stripeInstance.checkout.sessions.list({
-                    payment_intent: paymentIntent.id
-                })
-                const session = sessionList.data[0]
-                const { bookingId } = session.metadata
+                    payment_intent: paymentIntent.id,
+                });
+
+                const session = sessionList.data[0];
+                const { bookingId } = session.metadata;
+
                 await Booking.findByIdAndUpdate(bookingId, {
                     isPaid: true,
-                    paymentLink: ""
+                    paymentLink: "",
+                });
 
-                })
-                //SEND CONFIRMATION EMAIL
+                // SEND CONFIRMATION EMAIL
                 await inngest.send({
-                    name:'app/show.booked',
-                    data:{bookingId}
-
-                })
-
+                    name: 'app/show.booked',
+                    data: { bookingId },
+                });
 
                 break;
             }
+
             default:
-                console.log('Unhandled Event Type:', event.type)
+                console.log('Unhandled Event Type:', event.type);
         }
-        response.json({ received: true })
+
+        response.json({ received: true });
 
     } catch (err) {
         console.error("Webhook Processing Error:", err);
-        response.status(500).send("Internal Server Error")
-
+        response.status(500).send("Internal Server Error");
     }
-
-}
+};
