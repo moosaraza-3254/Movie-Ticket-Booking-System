@@ -3,7 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { SignIn, SignUp } from '@clerk/clerk-react'
 
-import Navbar from './components/navbar'
+import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Movies from './pages/Movies'
